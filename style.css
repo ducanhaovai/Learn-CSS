@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+
+}
+
+
+body {
+    font-weight: 500;
+    background-color: #f5f5f5;
+}
+
+.tour {
+    width: 370px;
+    height: auto;
+    box-sizing: border-box;
+    background-color: white;
+   
+    
+
+}
+.tour-img{
+    border-radius: 10px 10px 0 0;
+}
+
+.tour-content {
+    padding: 20px 20px 14px 20px;
+}
+
+.tour-title {
+    padding-bottom: 10px;
+    color: #23262F;
+    font-weight: 500;
+    
+    width: 258px;
+    height: 56px;
+    font-size: 18px;
+    /*line-height: 28px;*/
+    /*có thể chia theo tỉ lệ line-height/font-zie vd:28/18*/
+    line-height: 1.556;
+}
+
+.tour-rating {
+    margin-bottom: 20px;
+}
+
+.tour-review-count,
+.tour-duration {
+    color: #3B3E44;
+}
+
+.tour-button {
+    font-size: 14px;
+    font-weight: 500;
+    color: #F4F5F6;
+    padding: 8px 17px;
+    background-color: #3B71FE;
+    text-decoration: none;
+    border-radius: 8px;
+    line-height: 17px;
+    display: inline-block;
+}
