@@ -70,7 +70,6 @@
 - _column-gap_: Khoảng trống chiều dọc
 - _row-gap_: Khoảng trống chiều ngang
 - _component_: Mục đích là tái sử dụng và có thể tùy chỉnh 1 chỗ để sử dụng nhiều nơi
-- _pug_: https://pugjs.org/api/getting-started.html
 - mixins: Giống function trong Javascript mục đích là tái sử dụng code
 - Biến: =, #{biến}
 - _position_: có 5 giá trị chính: static, relative, absolute, sticky, fixed, khi sử dụng thuộc tính position này thì đi kèm sẽ có các thuộc tính khác như top right bottom left z-index
@@ -84,7 +83,7 @@
 - _variables_: Biến là gì ? Khai báo như thế nào ? Cách sử dụng ra sao ? Ưu và nhược điểm của nó là gì ?
 - _grid_: Dàn layout cực nhanh
 - _time_: nó là thẻ inline
-- _each in pug_: Dùng để duyệt qua danh sách các phần tử trong mảng để hiển thị
+
 - _object-fit_: Thuộc tính này dùng cho thẻ img hoặc video, mục đích là để hiển thị hình ảnh hoặc video vừa với khung chứa nó hay không?
 - _object-position_: Dùng để căn chỉnh vị trí hiển thị của img hoặc video khi dùng với thuộc tính `object-fit`
 - _css selectors child_: :nth-child(number), :nth-last-child(number), :first-child, :last-child, những phần tử cùng cấp, .gem-item:first-child, .gem-item:last-child, .gem-item:nth-child(5), :not(selectors), .gem-item:not(:first-child), .gem-item:not(:nth-child(5))
