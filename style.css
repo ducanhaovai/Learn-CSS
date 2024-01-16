@@ -19,15 +19,12 @@ body {
     border-radius: 10px;
     margin-left: 30px;
     margin-bottom: 30px;
-    
-
-
-
+    word-break: break-word;
 }
 
 .tour-top {
     position: relative;
-    word-break: break-word;
+    
 }
 
 .tour-list-container {
@@ -61,7 +58,7 @@ body {
 }
 
 .tour-title {
-    padding-bottom: 10px;
+    padding-bottom: 20px;
     color: #23262F;
     font-weight: 500;
 
@@ -71,6 +68,15 @@ body {
     /*line-height: 28px;*/
     /*có thể chia theo tỉ lệ line-height/font-zie vd:28/18*/
     line-height: 1.556;
+    
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    
+    
 }
 
 .tour-rating {
@@ -130,10 +136,34 @@ body {
 }
 
 /*
-media screen and (min-with :320px){}
-media screen and (min-with :breakpoint){}
-
+media screen and (min-width :320px){}
+media screen and (min-width :breakpoint){}
+@media screen and (min-width :1023.98px){}
+@media screen and (min-width: breakpoint) and (max-width:breakpoint){}
 */
 @media screen and (max-width: 767.98px) { 
+    .tour-list{
+        row-gap: 20px;
+    }
+    .tour{
+        width: 100%;
+        
+    }
+    .tour-title{
+        font-size: 16px;
+    }
+    .tour-rating, .tour-button{
+        font-size: 12px;
+    }
+    .tour-content{
+        padding: 17px 17px 9px;
+    }
     
 }
+
+@media screen and (min-width: 768px) and (max-width: 1023.98px){
+    .tour{
+        width: calc(50% -20px);
+    }
+}
+    
