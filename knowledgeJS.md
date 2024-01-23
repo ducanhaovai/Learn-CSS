@@ -127,7 +127,13 @@ Logical Operators
     null == undefined; // true
     nhưng khi so sánh === khi false do khác giá trị
     // null thì sẽ chuyển về 0 còn thằng undefined thì sẽ chuyển thành NaN
-    
+    +swith...case:
+    phù hợp muốn so sánh 1 biến với 1 tập các giá trị 
+      -dùng khi diều kiện là tập các giá trị xác định
+      -nếu điều kiện là dạng khoảng (lớn/bé hơn) thì nên dùng if/else
+
+
+  
     
         
      
