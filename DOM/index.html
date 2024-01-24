@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change color for text</title>
+</head>
+
+<body>
+    <button onclick="makeRedcolor()">Red</button>
+    <button onclick="makeBluecolor()">Blue</button>
+    <button onclick="makeYellowcolor()">Yellow</button>
+    <button onclick="resetText()">Rest</button>
+
+    
+    <div id="content">
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Iure molestiae fugiat fuga distinctio
+        natus! Architecto reprehenderit doloribus, excepturi assumenda iste voluptatibus atque possimus nostrum aliquam?
+        Quidem quis nobis ea repellat.
+    </div>
+
+    <script>
+        function makeRedcolor() {
+            document.getElementById('content').style.color = 'red';
+        };
+        function makeBluecolor() {
+            document.getElementById('content').style.color = 'blue';
+        };
+        function makeYellowcolor() {
+            document.getElementById('content').style.color = 'yellow';
+        };
+        function resetText() {
+            document.getElementById('content').style.color = 'black';
+        };
+    </script>
+</body>
+
+</html>

@@ -17,3 +17,11 @@ function checkNumber4(n){
     if(n > 0 && n%2 === 0 && n > 10 && n%5 === 0  ){}
 
 }
+
+const sutdent = {
+    id:1,
+    name: 'EA'
+}
+const {id , name} =sutdent;
+console.log(id);
+console.log(name);
