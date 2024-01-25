@@ -166,4 +166,8 @@ media screen and (min-width :breakpoint){}
         width: calc(50% -20px);
     }
 }
+
+a :hover{
+    color: red;
+}
     
