@@ -1,16 +1,23 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import axios, { Axios } from "axios";
 import "./LoginSignup.css";
 import facebook_icon from "../Asset/fb.png";
 import google_icon from "../Asset/Logo Google.png";
 import x_icon from "../Asset/text.png";
+import { useNavigate } from "react-router-dom"
+
+axios.defaults.withCredentials = true;
 
 export const LoginSignup = () => {
+  const [message, setMessage] = useState("");
+
   const [values, setValues] = useState({
     name: "",
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate('/')
 
   const [action, setAction] = useState("Sign up");
   const [haveAccountText, setHaveAccountText] = useState(
@@ -31,31 +38,40 @@ export const LoginSignup = () => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = (e) => {
+    e.preventDefault();
     axios
-      .post("http://localhost:8081/signup", values)
-      .then((res) => {
+      .post("http://localhost:8088/signup", values)
+      .then(res => {
         console.log("Sign up successful:", res.data);
-        // Đăng ký thành công, bạn có thể thực hiện các hành động khác ở đây, chẳng hạn chuyển hướng trang
+        setMessage("Registration successful");
+        navigate('/login')
+         // Chuyển hướng đến đường dẫn '/' sau khi đăng ký thành công
       })
       .catch((err) => {
         console.error("Sign up failed:", err);
+        setMessage("An error occurred");
         // Xử lý lỗi khi đăng ký không thành công, ví dụ: hiển thị thông báo lỗi
       });
   };
 
   const handleSignIn = () => {
+    axios.defaults.withCredentials = true;
     axios
-      .post("http://localhost:8081/login", values)
+      .post("http://localhost:8088/login", values)
       .then((res) => {
         console.log("Sign in successful:", res.data);
+        setMessage("Login successful");
+        navigate('/home');
         // Đăng nhập thành công, bạn có thể thực hiện các hành động khác ở đây, chẳng hạn chuyển hướng trang
       })
       .catch((err) => {
         console.error("Sign in failed:", err);
+        setMessage("Wrong email or password!");
         // Xử lý lỗi khi đăng nhập không thành công, ví dụ: hiển thị thông báo lỗi
       });
   };
+ 
 
   return (
     <div>
@@ -140,6 +156,7 @@ export const LoginSignup = () => {
             </button>
           )}
         </div>
+        {message && <p className="message">{message}</p>}
       </div>
     </div>
   );
