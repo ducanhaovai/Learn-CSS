@@ -1,19 +1,15 @@
 {
     "functions": {
       "api/signup": {
-        "handler": "api/signup.js",
         "methods": ["POST"]
       },
       "api/login": {
-        "handler": "api/login.js",
         "methods": ["POST"]
       },
       "api/logout": {
-        "handler": "api/logout.js",
         "methods": ["GET"]
       },
       "api/home": {
-        "handler": "api/home.js",
         "methods": ["GET"]
       }
     },
