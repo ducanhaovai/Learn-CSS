@@ -3,31 +3,32 @@ const mysql = require("mysql2");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 
-
 const cookie = require("cookie-parser");
 const session = require("express-session");
 const jwt = require("jsonwebtoken");
 
-
 const app = express();
 app.use(express.json());
-app.use(cors({
-  origin:['http://localhost:3000'],
-  methods: ['GET', 'POST'],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 app.use(cookie());
 
-app.use(session({
-  key: "userID",
-  secret: 'ducanh',
-  resave: false,
-  saveUninitialized: false,
-  cookie:{
-    express: 60 * 60 * 24,
-  }
-}))
-
+app.use(
+  session({
+    key: "userID",
+    secret: "ducanh",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      express: 60 * 60 * 24,
+    },
+  })
+);
 
 const db = mysql.createConnection({
   host: "localhost",
@@ -38,23 +39,27 @@ const db = mysql.createConnection({
 });
 const verifyUser = (req, res, next) => {
   const token = req.cookies.token;
-  if(!token){
-    return res.json({Message: "need token!"})
-  }else{
-    jwt.verify(token, "our-jsonwebtoken-key",  (err, decoded) =>{
-       if(err) {
-        return res.json({Message:"Xac nhan that bai"})
-       }else{
+  if (!token) {
+    return res.json({ Message: "need token!" });
+  } else {
+    jwt.verify(token, "our-jsonwebtoken-key", (err, decoded) => {
+      if (err) {
+        return res.json({ Message: "Xac nhan that bai" });
+      } else {
         req.name = decoded.name;
         next();
-       }
-    })
+      }
+    });
   }
-}
+};
 
-app.get('/home',verifyUser, (req, res) => {
-     return res.json({Status: "Success", name: req.name})
-})
+app.get("/home", verifyUser, (req, res) => {
+  return res.json({ Status: "Success", name: req.name });
+});
+
+app.use("/", (req, res) => {
+  res.send("server running.");
+});
 
 db.connect((err) => {
   if (err) {
@@ -63,8 +68,6 @@ db.connect((err) => {
   }
   console.log("Connected to MySQL database");
 });
-
-
 
 app.post("/signup", (req, res) => {
   const { name, email, password } = req.body;
@@ -97,9 +100,6 @@ app.post("/signup", (req, res) => {
   });
 });
 
-
-
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -131,26 +131,21 @@ app.post("/login", (req, res) => {
           .status(401)
           .json({ error: "User not found or invalid credentials" });
       }
-      if (results.length >  0) {
+      if (results.length > 0) {
         console.log("User logged in successfully");
-      const token = jwt.sign({user}, "our-jsonwebtoken-key", {expiresIn: '1d'});
-      res.cookie('token', token);
-      return res.json({Status: "Success"})
+        const token = jwt.sign({ user }, "our-jsonwebtoken-key", {
+          expiresIn: "1d",
+        });
+        res.cookie("token", token);
+        return res.json({ Status: "Success" });
       }
-
-      
-      
     });
   });
 
-
-
-  app.get('/logout', (req, res) => {
-    res.clearCookie('token')
-    return res.json({Status: "Success"})
-  })
-
-
+  app.get("/logout", (req, res) => {
+    res.clearCookie("token");
+    return res.json({ Status: "Success" });
+  });
 });
 const port = 8088;
 app.listen(port, () => {
