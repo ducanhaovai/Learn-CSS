@@ -1,31 +1,15 @@
 {
-    "functions": {
-      "api/signup": {
-        "runtime": "nodejs14",
-        "memory": 1024,
-        "maxDuration": 10
-      },
-      "api/login": {
-        "runtime": "nodejs14",
-        "memory": 1024,
-        "maxDuration": 10
-      },
-      "api/logout": {
-        "runtime": "nodejs14",
-        "memory": 1024,
-        "maxDuration": 10
-      },
-      "api/home": {
-        "runtime": "nodejs14",
-        "memory": 1024,
-        "maxDuration": 10
-      }
-    },
-    "rewrites": [
-      { "source": "/signup", "destination": "/api/signup" },
-      { "source": "/login", "destination": "/api/login" },
-      { "source": "/logout", "destination": "/api/logout" },
-      { "source": "/home", "destination": "/api/home" }
+    "version": 2,
+    "builds": [
+        {
+            "src": "./server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/"
+        }
     ]
-  }
-  
+}
