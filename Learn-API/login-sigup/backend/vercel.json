@@ -1,0 +1,27 @@
+{
+    "functions": {
+      "api/signup": {
+        "handler": "api/signup.js",
+        "methods": ["POST"]
+      },
+      "api/login": {
+        "handler": "api/login.js",
+        "methods": ["POST"]
+      },
+      "api/logout": {
+        "handler": "api/logout.js",
+        "methods": ["GET"]
+      },
+      "api/home": {
+        "handler": "api/home.js",
+        "methods": ["GET"]
+      }
+    },
+    "rewrites": [
+      { "source": "/signup", "destination": "/api/signup" },
+      { "source": "/login", "destination": "/api/login" },
+      { "source": "/logout", "destination": "/api/logout" },
+      { "source": "/home", "destination": "/api/home" }
+    ]
+  }
+  
