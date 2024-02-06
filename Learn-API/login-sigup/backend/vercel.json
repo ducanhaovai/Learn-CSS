@@ -1,16 +1,24 @@
 {
     "functions": {
       "api/signup": {
-        "methods": ["POST"]
+        "runtime": "nodejs14.x",
+        "memory": 1024,
+        "maxDuration": 10
       },
       "api/login": {
-        "methods": ["POST"]
+        "runtime": "nodejs14.x",
+        "memory": 1024,
+        "maxDuration": 10
       },
       "api/logout": {
-        "methods": ["GET"]
+        "runtime": "nodejs14.x",
+        "memory": 1024,
+        "maxDuration": 10
       },
       "api/home": {
-        "methods": ["GET"]
+        "runtime": "nodejs14.x",
+        "memory": 1024,
+        "maxDuration": 10
       }
     },
     "rewrites": [
