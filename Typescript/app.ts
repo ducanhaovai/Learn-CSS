@@ -114,7 +114,12 @@ interface State {
     isLoading: boolean
 }
 
+interface State {
+   age: number
+}
+
 let state: State = {
     name: 'Anh',
-    isLoading: false
+    isLoading: false,
+    age: 100
 }
