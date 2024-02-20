@@ -123,3 +123,43 @@ let state: State = {
     isLoading: false,
     age: 100
 }
+
+/**
+ * Type
+ */
+
+type Name = {
+   name: string
+   isLoading: boolean
+}
+
+type Age ={
+    age: number
+}
+//co the gop vao nhau va thang interface khong the gop vao dc nhu nay
+type Person = Name | Age
+
+//nen dung type hon
+
+/**
+ * 
+ */
+/**
+ * Class
+ */
+class Person1{
+    name: string
+    age: number
+
+    constructor(name: string, age: number){
+        this.name = name
+        this.age= age
+    }
+    handle(){
+        this.name
+    }
+}
+
+const alex = new Person1('Anh', 27)
+
+console.log(Person1)
