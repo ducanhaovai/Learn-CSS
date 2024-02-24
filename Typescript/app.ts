@@ -148,15 +148,16 @@ type Person = Name | Age
  * Class
  */
 class Person1{
-    name: string
+     private name: string
     age: number
+    readonly money: number = 40
 
     constructor(name: string, age: number){
         this.name = name
         this.age= age
     }
     handle(){
-        this.name
+        let value = this.name
     }
 }
 
