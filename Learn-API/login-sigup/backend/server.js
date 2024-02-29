@@ -57,10 +57,6 @@ app.get("/home", verifyUser, (req, res) => {
   return res.json({ Status: "Success", name: req.name });
 });
 
-app.use("/", (req, res) => {
-  res.send("server running.");
-});
-
 db.connect((err) => {
   if (err) {
     console.error("Error connecting to database:", err);
@@ -102,9 +98,12 @@ app.post("/signup", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
+  console.log(email);
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
 
   const sql = "SELECT * FROM users WHERE email = ?";
-
   db.query(sql, [email], (err, results) => {
     if (err) {
       console.error("Error selecting user from database:", err);
@@ -114,31 +113,29 @@ app.post("/login", (req, res) => {
     }
 
     if (results.length === 0) {
-      return res
-        .status(401)
-        .json({ error: "User not found or invalid credentials" });
+      // Không tìm thấy người dùng với email được cung cấp
+      return res.status(401).json({ error: "User not found" });
     }
 
     const user = results[0];
-    // So sánh mật khẩu đã mã hóa với mật khẩu người dùng nhập vào
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
         console.error("Error comparing passwords:", err);
         return res.status(500).json({ error: "Error comparing passwords" });
       }
+
       if (!result) {
-        return res
-          .status(401)
-          .json({ error: "User not found or invalid credentials" });
+        // Mật khẩu không chính xác
+        return res.status(401).json({ error: "Invalid password" });
       }
-      if (results.length > 0) {
-        console.log("User logged in successfully");
-        const token = jwt.sign({ user }, "our-jsonwebtoken-key", {
-          expiresIn: "1d",
-        });
-        res.cookie("token", token);
-        return res.json({ Status: "Success" });
-      }
+
+      // Đăng nhập thành công: tạo token và gửi về cho người dùng
+      console.log("User logged in successfully");
+      const token = jwt.sign({ user }, "our-jsonwebtoken-key", {
+        expiresIn: "1d",
+      });
+      res.cookie("token", token);
+      return res.json({ Status: "Success" });
     });
   });
 
