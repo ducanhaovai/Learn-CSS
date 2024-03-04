@@ -1,7 +1,9 @@
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
+const axios = require("axios");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 const cookie = require("cookie-parser");
 const session = require("express-session");
@@ -38,19 +40,78 @@ const db = mysql.createConnection({
   port: 3306,
 });
 const verifyUser = (req, res, next) => {
+  const accessToken = req.cookies.access_token;
+  const refreshToken = req.cookies.refresh_token;
   const token = req.cookies.token;
-  if (!token) {
-    return res.json({ Message: "need token!" });
+
+  if (!accessToken && !refreshToken && !token) {
+    return res.status(401).json({ Message: "At least one of accessToken, refreshToken, or token is required!" });
   } else {
-    jwt.verify(token, "our-jsonwebtoken-key", (err, decoded) => {
-      if (err) {
-        return res.json({ Message: "Xac nhan that bai" });
-      } else {
-        req.name = decoded.name;
-        next();
-      }
-    });
+    if (accessToken) {
+      jwt.verify(accessToken, "our-jsonwebtoken-key", (err, decodedAccessToken) => {
+        if (err) {
+          return res.status(401).json({ Message: "Access token verification failed" });
+        } else {
+          req.accessTokenData = decodedAccessToken;
+          next();
+        }
+      });
+    } else if (refreshToken) {
+      jwt.verify(refreshToken, "our-refresh-token-secret", (err, decodedRefreshToken) => {
+        if (err) {
+          return res.status(401).json({ Message: "Refresh token verification failed" });
+        } else {
+          req.refreshTokenData = decodedRefreshToken;
+          next();
+        }
+      });
+    } else if (token) {
+      jwt.verify(token, "our-token-secret", (err, decodedToken) => {
+        if (err) {
+          return res.status(401).json({ Message: "Token verification failed" });
+        } else {
+          req.tokenData = decodedToken;
+          next();
+        }
+      });
+    }
   }
+};
+
+
+const getOauthGooleToken = async (code) => {
+  const body = {
+    code,
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    redirect_uri: process.env.GOOGLE_AUTHORIZED_REDIRECT_URI,
+    grant_type: "authorization_code",
+  };
+
+  const { data } = await axios.post(
+    "https://oauth2.googleapis.com/token",
+    new URLSearchParams(body),
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  return data;
+};
+
+// Hàm gửi yêu cầu lấy thông tin người dùng từ Google dựa trên Google OAuth token
+const getGoogleUser = async ({ id_token, access_token }) => {
+  const { data } = await axios.get(
+    "https://www.googleapis.com/oauth2/v1/userinfo",
+    {
+      params: { access_token, alt: "json" },
+      headers: { Authorization: `Bearer ${id_token}` },
+    }
+  );
+
+  return data;
 };
 
 app.get("/home", verifyUser, (req, res) => {
@@ -144,6 +205,46 @@ app.post("/login", (req, res) => {
     return res.json({ Status: "Success" });
   });
 });
+
+app.get("/api/oauth/google", async (req, res, next) => {
+  try {
+    const { code } = req.query;
+    const data = await getOauthGooleToken(code);
+    const { id_token, access_token } = data;
+    const googleUser = await getGoogleUser({ id_token, access_token });
+
+    if (!googleUser.verified_email) {
+      return res.status(403).json({
+        message: "Google email not verified",
+      });
+    }
+
+    const { email, name, picture } = googleUser;
+    console.log(googleUser); // Lấy thông tin email, tên và hình ảnh của người dùng
+
+    const manual_access_token = jwt.sign(
+      { email: googleUser.email, type: "access_token" },
+      process.env.AC_PRIVATE_KEY,
+      { expiresIn: "15m" }
+    );
+    const manual_refresh_token = jwt.sign(
+      { email: googleUser.email, type: "refresh_token" },
+      process.env.RF_PRIVATE_KEY,
+      { expiresIn: "100d" }
+    );
+    
+    
+
+    return res.redirect(
+      `http://localhost:3000/login/oauth?access_token=${manual_access_token}&refresh_token=${manual_refresh_token}&name=${name}&picture=${picture}`
+    );
+    
+    
+  } catch (error) {
+    next(error);
+  }
+});
+
 const port = 8088;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

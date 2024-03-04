@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios, { Axios } from "axios";
-import "./LoginSignup.css";
-import facebook_icon from "../Asset/fb.png";
-import google_icon from "../Asset/Logo Google.png";
-import x_icon from "../Asset/text.png";
-import { useNavigate } from "react-router-dom"
+import React, { useState } from "react";
+import axios from "axios";
+import './LoginSignup.css'
+import { useNavigate } from "react-router-dom";
+import LoginGoogle from "../loginGoogle";
 
 axios.defaults.withCredentials = true;
 
@@ -17,7 +15,7 @@ export const LoginSignup = () => {
     password: "",
   });
 
-  const navigate = useNavigate('/')
+  const navigate = useNavigate("/");
 
   const [action, setAction] = useState("Sign up");
   const [haveAccountText, setHaveAccountText] = useState(
@@ -40,19 +38,19 @@ export const LoginSignup = () => {
 
   const handleSignUp = (e) => {
     e.preventDefault();
-  
+
     // Kiểm tra xem người dùng đã nhập đủ thông tin hay không
     if (!values.name || !values.email || !values.password) {
       setMessage("Please enter all required information");
       return; // Không thực hiện chuyển hướng nếu thiếu thông tin
     }
-  
+
     axios
       .post("http://localhost:8088/signup", values)
       .then((res) => {
         console.log("Sign up successful:", res.data);
         setMessage("Registration successful");
-        navigate('/login');
+        navigate("/login");
       })
       .catch((err) => {
         console.error("Sign up failed:", err);
@@ -61,26 +59,25 @@ export const LoginSignup = () => {
   };
 
   const handleSignIn = () => {
-  // Kiểm tra xem người dùng đã nhập đủ thông tin hay không
-  if (!values.email || !values.password) {
-    setMessage("Please enter email and password");
-    return; // Không thực hiện chuyển hướng nếu thiếu thông tin
-  }
+    // Kiểm tra xem người dùng đã nhập đủ thông tin hay không
+    if (!values.email || !values.password) {
+      setMessage("Please enter email and password");
+      return; // Không thực hiện chuyển hướng nếu thiếu thông tin
+    }
 
-  axios.defaults.withCredentials = true;
-  axios
-    .post("http://localhost:8088/login", values)
-    .then((res) => {
-      console.log("Sign in successful:", res.data);
-      setMessage("Login successful");
-      navigate('/home');
-    })
-    .catch((err) => {
-      console.error("Sign in failed:", err);
-      setMessage("Wrong email or password!");
-    });
-};
- 
+    axios.defaults.withCredentials = true;
+    axios
+      .post("http://localhost:8088/login", values)
+      .then((res) => {
+        console.log("Sign in successful:", res.data);
+        setMessage("Login successful");
+        navigate("/home");
+      })
+      .catch((err) => {
+        console.error("Sign in failed:", err);
+        setMessage("Wrong email or password!");
+      });
+  };
 
   return (
     <div>
@@ -95,15 +92,7 @@ export const LoginSignup = () => {
           </span>
         </header>
         <div className="social">
-          <button className="fb">
-            <img src={facebook_icon} alt="Facebook" />
-          </button>
-          <button className="google">
-            <img src={google_icon} alt="Google" />
-          </button>
-          <button className="X">
-            <img src={x_icon} alt="Close" />
-          </button>
+          <LoginGoogle />
         </div>
         <div className="middle">
           <div className="rectangle"></div>

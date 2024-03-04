@@ -1,19 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
-import { LoginSignup } from "./components/login-signup/LoginSignup";
-import { Indexs } from "./components/header/Indexs";
+import './App.css'
+import { RouterProvider } from 'react-router-dom'
+import router from './router'
 
 function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/home" element={<Indexs />}></Route>
-          <Route path="/login" element={<LoginSignup />}></Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
-  );
+  return <RouterProvider router={router} />
 }
 
-export default App;
+export default App

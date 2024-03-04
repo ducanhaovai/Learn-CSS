@@ -3,51 +3,55 @@ import "./LoginSignup.css";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
-
 export const Indexs = () => {
   const [auth, setAuth] = useState(false);
-  const [name, setname] = useState('');
+  const [name, setName] = useState('');
   const [message, setMessage] = useState('')
- 
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Kiểm tra xác thực mỗi khi component được render
     axios.get('http://localhost:8088/home')
     .then(res => {
         if(res.data.Status === "Success"){
             setAuth(true);
-            setname(res.data.name)
+            setName(res.data.name)
         } else {
             setAuth(false);
-           setMessage(res.data.Message);
+            setMessage(res.data.Message);
         }
+    }).catch(err => console.log(err));
+  }, []);
+  
+  
 
-    })
-  }, [])
-  const navigate = useNavigate();
   const handleLogout = () => {
     axios.get('http://localhost:8088/logout')
     .then( res => {
         if(res.data.Status === "Success"){
-            // Sử dụng useNavigate để điều hướng lại trang
-            
-            navigate('/login', { replace: true }); // Thay thế trang hiện tại trong history
+            navigate('/login', { replace: true }); 
         } else {
             alert("error");
         }
     }).catch(err => console.log(err));
-};
+  };
+
+  const handleLogin = () => {
+    navigate('/login', { replace: true });
+  };
+
   return (
     <div>
+      
       {auth ? (
-        
         <div className="summit-container">
-          <h3>Da xac nhan{name}</h3>
-          <button className="sign-in" onClick={handleLogout}>Logout</button>
+          <h3>Đã xác nhận: {name}</h3>
+          <button className="sign-in" onClick={handleLogout}>Đăng xuất</button>
         </div>
       ) : (
         <div className="summit-container">
-            <h3>chua xac nhan: {message}</h3>
-            <button className="sign-in" >Login in </button>
+          <h3>Chưa xác nhận: {message}</h3>
+          <button className="sign-in" onClick={handleLogin}>Đăng nhập</button>
         </div>
       )}
     </div>
