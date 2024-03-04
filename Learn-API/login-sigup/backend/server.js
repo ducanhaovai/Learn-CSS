@@ -40,44 +40,20 @@ const db = mysql.createConnection({
   port: 3306,
 });
 const verifyUser = (req, res, next) => {
-  const accessToken = req.cookies.access_token;
-  const refreshToken = req.cookies.refresh_token;
   const token = req.cookies.token;
-
-  if (!accessToken && !refreshToken && !token) {
-    return res.status(401).json({ Message: "At least one of accessToken, refreshToken, or token is required!" });
+  if (!token) {
+    return res.json({ Message: "need token!" });
   } else {
-    if (accessToken) {
-      jwt.verify(accessToken, "our-jsonwebtoken-key", (err, decodedAccessToken) => {
-        if (err) {
-          return res.status(401).json({ Message: "Access token verification failed" });
-        } else {
-          req.accessTokenData = decodedAccessToken;
-          next();
-        }
-      });
-    } else if (refreshToken) {
-      jwt.verify(refreshToken, "our-refresh-token-secret", (err, decodedRefreshToken) => {
-        if (err) {
-          return res.status(401).json({ Message: "Refresh token verification failed" });
-        } else {
-          req.refreshTokenData = decodedRefreshToken;
-          next();
-        }
-      });
-    } else if (token) {
-      jwt.verify(token, "our-token-secret", (err, decodedToken) => {
-        if (err) {
-          return res.status(401).json({ Message: "Token verification failed" });
-        } else {
-          req.tokenData = decodedToken;
-          next();
-        }
-      });
-    }
+    jwt.verify(token, "our-jsonwebtoken-key", (err, decoded) => {
+      if (err) {
+        return res.json({ Message: "Xac nhan that bai" });
+      } else {
+        req.name = decoded.name;
+        next();
+      }
+    });
   }
 };
-
 
 const getOauthGooleToken = async (code) => {
   const body = {
@@ -199,11 +175,10 @@ app.post("/login", (req, res) => {
       return res.json({ Status: "Success" });
     });
   });
-
-  app.get("/logout", (req, res) => {
-    res.clearCookie("token");
-    return res.json({ Status: "Success" });
-  });
+});
+app.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  return res.json({ Status: "Success" });
 });
 
 app.get("/api/oauth/google", async (req, res, next) => {
@@ -220,7 +195,33 @@ app.get("/api/oauth/google", async (req, res, next) => {
     }
 
     const { email, name, picture } = googleUser;
-    console.log(googleUser); // Lấy thông tin email, tên và hình ảnh của người dùng
+
+    // Kiểm tra xem người dùng đã tồn tại trong cơ sở dữ liệu hay chưa
+    const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+
+    if (existingUser.length === 0) {
+      // Nếu người dùng chưa tồn tại, tạo một mật khẩu ngẫu nhiên
+      const randomPassword = generateRandomPassword(); // Hàm tạo mật khẩu ngẫu nhiên
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      
+      // Thêm người dùng mới vào cơ sở dữ liệu với mật khẩu ngẫu nhiên
+      const sql = 'INSERT INTO users (email, name, password) VALUES (?, ?, ?)';
+      await db.promise().query(sql, [email, name, hashedPassword]);
+
+      console.log('User added to the database successfully');
+      
+      // Trả về mật khẩu ngẫu nhiên cho người dùng
+      return res.status(200).json({ 
+        message: "User added successfully",
+        newPassword: randomPassword 
+      });
+    }
+
+    // Nếu người dùng đã tồn tại, tạo token và redirect
+    const token = jwt.sign({ user: googleUser }, "our-jsonwebtoken-key", {
+      expiresIn: "1d",
+    });
+    res.cookie("token", token);
 
     const manual_access_token = jwt.sign(
       { email: googleUser.email, type: "access_token" },
@@ -232,18 +233,23 @@ app.get("/api/oauth/google", async (req, res, next) => {
       process.env.RF_PRIVATE_KEY,
       { expiresIn: "100d" }
     );
-    
-    
 
+    // Redirect với các thông tin và token
     return res.redirect(
       `http://localhost:3000/login/oauth?access_token=${manual_access_token}&refresh_token=${manual_refresh_token}&name=${name}&picture=${picture}`
     );
-    
     
   } catch (error) {
     next(error);
   }
 });
+
+function generateRandomPassword() {
+  // Logic để tạo mật khẩu ngẫu nhiên, ví dụ:
+  const randomPassword = Math.random().toString(36).slice(-8);
+  return randomPassword;
+}
+
 
 const port = 8088;
 app.listen(port, () => {

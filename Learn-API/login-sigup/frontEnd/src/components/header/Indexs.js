@@ -8,10 +8,15 @@ export const Indexs = () => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('')
   const navigate = useNavigate();
+ 
 
   useEffect(() => {
     // Kiểm tra xác thực mỗi khi component được render
-    axios.get('http://localhost:8088/home')
+    axios.get('http://localhost:8088/home', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    })
     .then(res => {
         if(res.data.Status === "Success"){
             setAuth(true);
@@ -22,6 +27,7 @@ export const Indexs = () => {
         }
     }).catch(err => console.log(err));
   }, []);
+  
   
   
 
