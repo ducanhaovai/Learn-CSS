@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+
 const getOauthGoogleUrl = () => {
   const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
   const options = {
@@ -19,24 +20,13 @@ const getOauthGoogleUrl = () => {
 };
 
 function Home() {
-  const isAuthenticated = Boolean(localStorage.getItem("access_token"));
+  
   const oauthURL = getOauthGoogleUrl();
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    window.location.reload();
-  };
+  
   return (
     <>
-      <div>
-        {isAuthenticated ? (
-          <div>
-            <p>Xin chào, bạn đã login thành công</p>
-            <button onClick={logout}>Click để logout</button>
-          </div>
-        ) : (
-          <Link to={oauthURL}>Login with Google</Link>
-        )}
+      <div>       
+          <Link to={oauthURL}>Login with Google</Link>       
       </div>
     </>
   );

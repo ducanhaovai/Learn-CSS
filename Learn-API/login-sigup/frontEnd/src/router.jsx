@@ -1,26 +1,27 @@
 import { createBrowserRouter } from 'react-router-dom'
-import Login from './components/loginGoogle/login'
+import Login from './features/loginGoogle/login'
 
-import { LoginSignup } from "./components/login-signup/LoginSignup";
-import LoginGoogle from './components/loginGoogle';
-import { Indexs } from './components/header/Indexs';
+import { LoginSignup } from './features/register/LoginSignup';
+
+
 
 const router = createBrowserRouter([
   {
     path: '/home',
-    element: <Indexs />
+
   },
   {
     path: '/login',
+    
+  },
+  {
+    path: '/register',
     element: <LoginSignup />
   },
-  {
-    path: '/login',
-    element: <LoginGoogle/>
-  },
+
   {
     path: '/login/oauth',
-    element: < Login/>
+    element: < Login />
   }
 ])
 

@@ -110,6 +110,10 @@ app.post("/signup", (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
+  // URL ảnh mặc định
+  const defaultImageUrl =
+    "https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png";
+
   // Sử dụng bcrypt để mã hóa mật khẩu
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
@@ -117,9 +121,10 @@ app.post("/signup", (req, res) => {
       return res.status(500).json({ error: "Error hashing password" });
     }
 
-    // Thực hiện thêm người dùng vào cơ sở dữ liệu với mật khẩu đã mã hóa
-    const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-    const values = [name, email, hashedPassword];
+    // Thực hiện thêm người dùng vào cơ sở dữ liệu với URL ảnh mặc định
+    const sql =
+      "INSERT INTO users (name, email, password, img) VALUES (?, ?, ?, ?)";
+    const values = [name, email, hashedPassword, defaultImageUrl];
 
     db.query(sql, values, (err, results) => {
       if (err) {
@@ -132,6 +137,13 @@ app.post("/signup", (req, res) => {
     });
   });
 });
+
+app.get("/imageUrl", (req, res) => {
+  // Thực hiện truy vấn cơ sở dữ liệu để lấy đường dẫn hoặc dữ liệu hình ảnh
+  const imageUrl = "http://example.com/user/avatar.jpg"; // Thay thế bằng đường dẫn hình ảnh thực tế
+  res.status(200).json({ imageUrl });
+});
+
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -197,24 +209,27 @@ app.get("/api/oauth/google", async (req, res, next) => {
     const { email, name, picture } = googleUser;
 
     // Kiểm tra xem người dùng đã tồn tại trong cơ sở dữ liệu hay chưa
-    const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+    const [existingUser] = await db
+      .promise()
+      .query("SELECT * FROM users WHERE email = ?", [email]);
 
     if (existingUser.length === 0) {
       // Nếu người dùng chưa tồn tại, tạo một mật khẩu ngẫu nhiên
       const randomPassword = generateRandomPassword(); // Hàm tạo mật khẩu ngẫu nhiên
       const hashedPassword = await bcrypt.hash(randomPassword, 10);
-      
-      // Thêm người dùng mới vào cơ sở dữ liệu với mật khẩu ngẫu nhiên
-      const sql = 'INSERT INTO users (email, name, password) VALUES (?, ?, ?)';
-      await db.promise().query(sql, [email, name, hashedPassword]);
 
-      console.log('User added to the database successfully');
-      
+      // Thêm người dùng mới vào cơ sở dữ liệu với mật khẩu ngẫu nhiên
+      const sql =
+        "INSERT INTO users (name, email, password , img) VALUES (?, ?, ?, ?)";
+      await db.promise().query(sql, [name, email, hashedPassword, picture]);
+
+      console.log("User added to the database successfully");
+
       // Trả về mật khẩu ngẫu nhiên cho người dùng
-      return res.status(200).json({ 
+      const responseData = {
         message: "User added successfully",
-        newPassword: randomPassword 
-      });
+        newPassword: randomPassword,
+      };
     }
 
     // Nếu người dùng đã tồn tại, tạo token và redirect
@@ -238,7 +253,6 @@ app.get("/api/oauth/google", async (req, res, next) => {
     return res.redirect(
       `http://localhost:3000/login/oauth?access_token=${manual_access_token}&refresh_token=${manual_refresh_token}&name=${name}&picture=${picture}`
     );
-    
   } catch (error) {
     next(error);
   }
@@ -249,7 +263,6 @@ function generateRandomPassword() {
   const randomPassword = Math.random().toString(36).slice(-8);
   return randomPassword;
 }
-
 
 const port = 8088;
 app.listen(port, () => {
